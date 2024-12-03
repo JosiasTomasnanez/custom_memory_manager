@@ -1,0 +1,22 @@
+name: "Build"
+description: "Executes a compilation."
+
+runs:
+  using: "composite"
+  steps:
+    - name: Compile
+      shell: bash
+      run: |
+
+        SRC_FOLDER=$(pwd)/src
+
+        echo "Running command: cmake -DRUN_COVERAGE=1 .. && make -j2"
+
+        # mkdir -p build && cd build
+        #cmake ..
+        # make -j2
+        conan profile detect
+        conan install . --output-folder=build --build=missing --settings=build_type=Debug
+        cd build
+        cmake .. -DCMAKE_TOOLCHAIN_FILE=./build/Debug/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DRUN_TESTS=1 -DRUN_COVERAGE=1
+        make -j2

@@ -1,0 +1,28 @@
+name: 'CPPCheck Analysis'
+description: 'Runs static code analysis using cppcheck'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install cppcheck
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cppcheck
+
+    - name: Run cppcheck
+      shell: bash
+      run: |
+        cppcheck --enable=all \
+                 --error-exitcode=1 \
+                 --suppress=missingInclude \
+                 --suppress=unmatchedSuppression \
+                 --suppress=unusedFunction \
+                 --xml --xml-version=2 2>cppcheck-result.xml \
+                 src/
+
+    - name: Generate report
+      shell: bash
+      run: |
+        cppcheck-htmlreport --file=cppcheck-result.xml --report-dir=cppcheck-report
+        
